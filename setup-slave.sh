@@ -20,18 +20,38 @@ EXT3_MOUNT_OPTS="defaults,noatime,nodiratime"
 XFS_MOUNT_OPTS="defaults,noatime,nodiratime,allocsize=8m"
 
 # Mount any ephemeral volumes we might have beyond /mnt
+function make_filesystem {
+  device=$1
+  mkfs.ext4 $device
+  sleep 3
+}
+
 function setup_extra_volume {
   device=$1
   mount_point=$2
   if [[ -e $device && ! -e $mount_point ]]; then
     mkdir -p $mount_point
-    mount -o $EXT3_MOUNT_OPTS $device $mount_point
+    mount -t ext4 -o $EXT3_MOUNT_OPTS $device $mount_point
+    sleep 3
     echo "$device $mount_point auto $EXT3_MOUNT_OPTS 0 0" >> /etc/fstab
   fi
 }
-setup_extra_volume /dev/xvdc /mnt2
-setup_extra_volume /dev/xvdd /mnt3
-setup_extra_volume /dev/xvde /mnt4
+rmdir /mnt
+umount /media/ephemeral0 # EC2 likes to mount first ephemeral storage here
+make_filesystem /dev/xvdb
+setup_extra_volume /dev/xvdb /mnt
+possible_drives=( a b c d e f g h i j k l m n o p q r s t u v w x y z)
+for i in {2..26}
+do
+  drive=${possible_drives[$i]}
+  make_filesystem /dev/xvd${drive}
+done
+
+for i in {2..26}
+do
+  drive=${possible_drives[$i]}
+  setup_extra_volume /dev/xvd${drive} /mnt$i
+done
 
 # Mount cgroup file system
 if [[ ! -e /cgroup ]]; then

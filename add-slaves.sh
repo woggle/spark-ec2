@@ -8,10 +8,11 @@ source /root/.bash_profile
 # Load the cluster variables set by the deploy script
 source ec2-variables.sh
 
-echo $ADD_SLAVES >> /root/spark-ec2/slaves
+echo "$ADD_SLAVES" >> /root/spark-ec2/slaves
 SSH_OPTS="-o StrictHostKeyChecking=no -o ConnectTimeout=5"
 
 TODO="$ADD_SLAVES"
+TRIES="0"                          # Number of times we've tried so far
 echo "SSH'ing to other cluster nodes to approve keys..."
 while [ "e$TODO" != "e" ] && [ $TRIES -lt 4 ] ; do
   NEW_TODO=

@@ -34,4 +34,6 @@ if [! -d "impala-tpcds-kit"]; then
   # Generated out (commented out so can more easily vary scale factor).
   #./gen-dims.sh
   #./run-gen-facts.sh
+  popd
+popd
 

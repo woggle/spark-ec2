@@ -4,7 +4,7 @@ sudo yum -y install gcc make flex bison byacc
 
 pushd /root
 
-if [! -d "tpcds-kit" ]; then
+if [[ ! -d "tpcds-kit" ]]; then
   echo "Cloning TPC-DS kit for data generation"
   # Need tpc-ds kit in order to generate data (but not
   # used for query generation, because Shark doesn't
@@ -16,9 +16,9 @@ if [! -d "tpcds-kit" ]; then
   popd
 fi
 
-if [! -d "impala-tpcds-kit"]; then
+if [[ ! -d "impala-tpcds-kit" ]]; then
   echo "Cloning TPC-DS scripts"
-  git clone https://github.com/kayousterhout/impala-tpcds-kit.git
+  git clone https://github.com/kayousterhout/impala-tpcds-kit.git -b shark
   pushd impala-tpcds-kit
   cp /root/spark-ec2/slaves dn.txt
 
@@ -35,5 +35,7 @@ if [! -d "impala-tpcds-kit"]; then
   #./gen-dims.sh
   #./run-gen-facts.sh
   popd
+fi
+
 popd
 

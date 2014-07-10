@@ -7,11 +7,12 @@ pushd /root
 echo "-------------------Installing Protobufs"
 wget https://protobuf.googlecode.com/files/protobuf-2.5.0.tar.gz
 tar -xvzf protobuf-2.5.0.tar.gz
-cd protobuf-2.5.0
+pushd protobuf-2.5.0
 ./configure
 make
 sudo make install
 sudo ldconfig
+popd
 
 echo "-------------------Installing Maven"
 wget http://apache.spinellicreations.com/maven/maven-3/3.2.1/binaries/apache-maven-3.2.1-bin.tar.gz

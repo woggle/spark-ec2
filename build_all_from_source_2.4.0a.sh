@@ -20,7 +20,7 @@ tar -xvzf apache-maven-3.2.1-bin.tar.gz
 mv apache-maven-3.2.1 /usr/local/apache-maven/
 
 echo "-------------------Building Hadoop"
-git clone -b branch-2.0.2-withlogging-protobuf2.40.a https://github.com/kayousterhout/hadoop-common.git
+git clone -b branch-2.0.2-withlogging-protobuf2.4.0a https://github.com/kayousterhout/hadoop-common.git
 pushd hadoop-common
 /usr/local/apache-maven/bin/mvn package -DskipTests -Pdist -Dmaven.javadoc.skip=true -e -X
 # mvn install puts Hadoop in the ~/.m2 directory, where Spark/Shark can find it.

@@ -28,7 +28,9 @@ pushd hadoop-common
 popd
 
 echo "-------------------Setting up Spark"
-mv spark spark_old
+cp -r spark /mnt/spark_old
+rm -rf spark
+ln -s /mnt/spark_old spark_old
 git clone -b proc_logging_perf_minimal_temp https://github.com/kayousterhout/spark-1.git spark
 cp spark_old/conf/* spark/conf/
 pushd spark
@@ -38,7 +40,9 @@ SPARK_HADOOP_VERSION=2.0.2-kay sbt/sbt clean assembly publish-local
 popd
 
 echo "Setting up Shark"
-mv shark shark_old
+cp -r shark /mnt/shark_old
+rm -rf shark
+ln -s /mnt/shark_old shark_old
 git clone -b branch-0.9 https://github.com/amplab/shark.git
 cp shark_old/conf/shark-env.sh shark/conf/
 pushd shark

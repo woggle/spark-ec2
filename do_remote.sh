@@ -1,3 +1,6 @@
+# positional argument: # of nodes
+echo "got $1 nodes"
+
 # Exit if any commands fail.                                                    
 set -e
 set -o pipefail
@@ -18,7 +21,8 @@ sleep 10
 
 echo "Creating tables"
 pushd impala-tpcds-kit
-python ~/spark-ec2/rewriter.py tpcds-env.sh -r -k=SCALE_FACTOR -v=5
+SF=$(($1*15*3))
+python ~/spark-ec2/rewriter.py tpcds-env.sh -r -k=SCALE_FACTOR -v=$SF
 ./push-bits.sh
 ./set-node-num.sh
 ./gen-dims.sh

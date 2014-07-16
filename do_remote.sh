@@ -28,7 +28,7 @@ sleep 10
 spark/sbin/start-all.sh
 
 echo "Starting sharkserver in background"
-screen -S sharkserver -d -m shark/bin/shark --service sharkserver -p 4444
+ssh localhost 'screen -S sharkserver -d -m shark/bin/shark --service sharkserver -p 4444'
 sleep 10
 
 echo "Removing old tpcds data"

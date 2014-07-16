@@ -7,7 +7,7 @@ do
   echo "Running query in file $query_file and sending output to $OUTPUT_FILENAME"
   # Clear buffer cache before each query!
 
-  TIMER_FILE_RELATIVE=`ls -t /tmp/spark-root/ | head -1`
+  TIMER_FILE_RELATIVE=`ls /tmp/spark-root/ | sort | tail -1`
   TIMER_FILE="/tmp/spark-root/$TIMER_FILE_RELATIVE"
 
   OUTPUT_FOLDER="/mnt/output/$FILENAME-$TIMER_FILE_RELATIVE"

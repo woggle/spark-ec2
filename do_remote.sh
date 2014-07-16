@@ -1,5 +1,6 @@
 # positional argument: # of nodes
 echo "got $1 nodes"
+NODES=`wc -l < /root/impala-tpcds-kit/dn.txt`
 
 # Exit if any commands fail.                                                    
 set -e
@@ -9,6 +10,11 @@ pushd ~
 
 echo "Starting build"
 spark-ec2/build_all_from_source_2.4.0a.sh
+
+pushd ~/spark-ec2
+echo "Updating ephemeral-hdfs/conf/mapred-site.xml"
+cp mapred-site.xml ~/ephemeral-hdfs/conf/mapred-site.xml
+popd
 
 echo "Restarting Spark"
 spark/sbin/stop-all.sh
@@ -21,7 +27,7 @@ sleep 10
 
 echo "Creating tables"
 pushd impala-tpcds-kit
-SF=$(($1*15*3))
+SF=$(($NODES*15*3))
 python ~/spark-ec2/rewriter.py tpcds-env.sh -r -k=SCALE_FACTOR -v=$SF
 ./push-bits.sh
 ./set-node-num.sh

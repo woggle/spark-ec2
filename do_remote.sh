@@ -39,7 +39,7 @@ pushd impala-tpcds-kit
 SF=$(($NODES*15*3))
 python ~/spark-ec2/rewriter.py tpcds-env.sh -r -k=SCALE_FACTOR -v=$SF
 ./push-bits.sh
-./set-node-num.sh
+./set-nodenum.sh
 ./gen-dims.sh
 ./run-gen-facts.sh 
 

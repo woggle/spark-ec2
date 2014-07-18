@@ -29,7 +29,7 @@ popd
 
 echo "-------------------Setting up Spark"
 mv spark spark_old
-git clone -b proc_logging_perf_minimal_temp https://github.com/kayousterhout/spark-1.git spark
+git clone -b proc_logging_0.9.2 https://github.com/kayousterhout/spark-1.git spark
 cp spark_old/conf/* spark/conf/
 pushd spark
 # Similar to mvn install, sbt/sbt publish-local puts Spark in the ~/.ivy2 directory,
@@ -45,7 +45,7 @@ pushd shark
 # Note that if you need to rebuild Shark after fixing something in Spark,
 # you need to do "sbt/sbt clean", otherwise sbt won't pick up the newer Spark
 # dependency in the local Ivy repository (in ~/.ivy2).
-SPARK_VERSION=0.9.1-SNAPSHOT SPARK_HADOOP_VERSION=2.0.2-kay sbt/sbt clean package
+SPARK_VERSION=0.9.2-SNAPSHOT SPARK_HADOOP_VERSION=2.0.2-kay sbt/sbt clean package
 popd
 
 echo "Copying files to cluster"

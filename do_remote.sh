@@ -31,6 +31,9 @@ echo "Starting sharkserver in background"
 ssh localhost 'screen -S sharkserver -d -m shark/bin/shark --service sharkserver -p 4444'
 sleep 10
 
+echo "Exiting before removing tpcds for debugging"
+exit 0
+
 echo "Removing old tpcds data"
 ephemeral-hdfs/bin/hdfs dfs -rmr /user/root/tpcds
 

@@ -38,6 +38,7 @@ cp spark_old/conf/* spark/conf/
 pushd spark
 # Similar to mvn install, sbt/sbt publish-local puts Spark in the ~/.ivy2 directory,
 # where Shark can find it.
+git cherry-pick 269d9f13ec43d3802877d78ee84f3b25ac123290
 SPARK_HADOOP_VERSION=2.0.2-kay sbt/sbt clean assembly publish-local
 popd
 

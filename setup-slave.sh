@@ -70,3 +70,7 @@ echo 1 > /proc/sys/vm/overcommit_memory
 # Add github to known hosts to get git@github.com clone to work
 # TODO(shivaram): Avoid duplicate entries ?
 cat /root/spark-ec2/github.hostkey >> /root/.ssh/known_hosts
+
+# Mount tmpfs for HDFS to use.
+mkdir /inmem-hadoop
+mount -o size=20g -t tmpfs tmpfs /inmem-hadoop

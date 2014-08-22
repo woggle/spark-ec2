@@ -14,43 +14,31 @@ HOSTNAME=$PRIVATE_DNS  # Fix the bash built-in hostname variable too
 
 echo "Setting up slave on `hostname`..."
 
-# Work around for R3 instances without pre-formatted ext3 disks
-instance_type=$(curl http://169.254.169.254/latest/meta-data/instance-type 2> /dev/null)
-if [[ $instance_type == r3* ]]; then
-  # Format & mount using ext4, which has the best performance among ext3, ext4, and xfs based
-  # on our shuffle heavy benchmark
-  EXT4_MOUNT_OPTS="defaults,noatime,nodiratime"
-  rm -rf /mnt*
-  mkdir /mnt
-  # To turn TRIM support on, uncomment the following line.
-  #echo '/dev/sdb /mnt  ext4  defaults,noatime,nodiratime,discard 0 0' >> /etc/fstab
-  mkfs.ext4 -E lazy_itable_init=0,lazy_journal_init=0 /dev/sdb
-  mount -o $EXT4_MOUNT_OPTS /dev/sdb /mnt
+# Mount options to use for ext4
+EXT4_MOUNT_OPTS="defaults,noatime,nodiratime"
 
-  if [[ $instance_type == "r3.8xlarge" ]]; then
-    mkdir /mnt2
-    # To turn TRIM support on, uncomment the following line.
-    #echo '/dev/sdc /mnt2  ext4  defaults,noatime,nodiratime,discard 0 0' >> /etc/fstab
-    mkfs.ext4 -E lazy_itable_init=0,lazy_journal_init=0 /dev/sdc
-    mount -o $EXT4_MOUNT_OPTS /dev/sdc /mnt2
+# Reformat existing mount points as EXT4
+for mnt in `mount | grep mnt | cut -d " " -f 3`; do
+  device=$(df /$mnt | tail -n 1 | awk '{ print $1; }')
+  empty=$(ls /$mnt | grep -v lost+found) 
+  if [[ "$empty" == "" ]]; then
+    umount /$mnt
+    mkfs.ext4 $device
+    mount -o $EXT4_MOUNT_OPTS $device /$mnt
+    echo "$device /$mnt auto $EXT4_MOUNT_OPTS 0 0" >> /etc/fstab
   fi
-fi
-
-# Mount options to use for ext3 and xfs disks (the ephemeral disks
-# are ext3, but we use xfs for EBS volumes to format them faster)
-XFS_MOUNT_OPTS="defaults,noatime,nodiratime,allocsize=8m"
+done
 
 # Format and mount EBS volume (/dev/sdv) as /vol if the device exists
 if [[ -e /dev/sdv ]]; then
   # Check if /dev/sdv is already formatted
   if ! blkid /dev/sdv; then
     mkdir /vol
-    yum install -q -y xfsprogs
-    if mkfs.xfs -q /dev/sdv; then
-      mount -o $XFS_MOUNT_OPTS /dev/sdv /vol
+    if mkfs.ext4 -q /dev/sdv; then
+      mount -o $EXT4_MOUNT_OPTS /dev/sdv /vol
       chmod -R a+w /vol
     else
-      # mkfs.xfs is not installed on this machine or has failed;
+      # mkfs.ext4 is not installed on this machine or has failed;
       # delete /vol so that the user doesn't think we successfully
       # mounted the EBS volume
       rmdir /vol
@@ -59,7 +47,7 @@ if [[ -e /dev/sdv ]]; then
     # EBS volume is already formatted. Mount it if its not mounted yet.
     if ! grep -qs '/vol' /proc/mounts; then
       mkdir /vol
-      mount -o $XFS_MOUNT_OPTS /dev/sdv /vol
+      mount -o $EXT4_MOUNT_OPTS /dev/sdv /vol
       chmod -R a+w /vol
     fi
   fi

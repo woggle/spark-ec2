@@ -25,7 +25,7 @@ for mnt in `mount | grep mnt | cut -d " " -f 3`; do
   empty=$(ls /$mnt | grep -v lost+found) 
   if [[ "$empty" == "" ]]; then
     umount /$mnt
-    mkfs.ext4 -E lazy_itable_init=0,lazy_journal_init=0 -f $device
+    mkfs.ext4 -E lazy_itable_init=0,lazy_journal_init=0 $device
     mount -o $EXT4_MOUNT_OPTS $device /$mnt
     echo "$device /$mnt auto $EXT4_MOUNT_OPTS 0 0" >> /etc/fstab
   fi

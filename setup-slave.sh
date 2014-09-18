@@ -16,6 +16,7 @@ echo "Setting up slave on `hostname`..."
 
 # Mount options to use for xfs
 XFS_MOUNT_OPTS="defaults,noatime,nodiratime,allocsize=8m"
+EXT4_MOUNT_OPTS="defaults,noatime,nodiratime"
 
 # Reformat existing mount points as XFS
 yum install -y xfsprogs
@@ -24,9 +25,9 @@ for mnt in `mount | grep mnt | cut -d " " -f 3`; do
   empty=$(ls /$mnt | grep -v lost+found) 
   if [[ "$empty" == "" ]]; then
     umount /$mnt
-    mkfs.xfs -f $device
-    mount -o $XFS_MOUNT_OPTS $device /$mnt
-    echo "$device /$mnt auto $XFS_MOUNT_OPTS 0 0" >> /etc/fstab
+    mkfs.ext4 -E lazy_itable_init=0,lazy_journal_init=0 -f $device
+    mount -o $EXT4_MOUNT_OPTS $device /$mnt
+    echo "$device /$mnt auto $EXT4_MOUNT_OPTS 0 0" >> /etc/fstab
   fi
 done
 

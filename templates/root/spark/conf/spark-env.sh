@@ -1,34 +1,21 @@
 #!/usr/bin/env bash
 
-# Set Spark environment variables for your site in this file. Some useful
-# variables to set are:
-# - MESOS_NATIVE_LIBRARY, to point to your Mesos native library (libmesos.so)
-# - SCALA_HOME, to point to your Scala installation
-# - SPARK_CLASSPATH, to add elements to Spark's classpath
-# - SPARK_JAVA_OPTS, to add JVM options
-# - SPARK_MEM, to change the amount of memory used per node (this should
-#   be in the same format as the JVM's -Xmx option, e.g. 300m or 1g).
-# - SPARK_LIBRARY_PATH, to add extra search paths for native libraries.
+export SPARK_LOCAL_DIRS="{{spark_local_dirs}}"
 
-export SCALA_HOME=/root/scala-2.10.3
-export MESOS_NATIVE_LIBRARY=/usr/local/lib/libmesos.so
+# Standalone cluster options
+export SPARK_MASTER_OPTS="{{spark_master_opts}}"
+export SPARK_WORKER_INSTANCES={{spark_worker_instances}}
+export SPARK_WORKER_CORES={{spark_worker_cores}}
 
-# Set Spark's memory per machine; this is used only to control the driver's
-# memory.  Executor memory is set using spark.executor.memory.
-export SPARK_MEM=1000m
+export HADOOP_HOME="/root/ephemeral-hdfs"
+export SPARK_MASTER_IP={{active_master}}
+export MASTER=`cat /root/spark-ec2/cluster-url`
 
-# Set JVM options and Spark Java properties
-SPARK_JAVA_OPTS+=" -Dspark.cores.max=6 -Dspark.executor.memory={{default_spark_mem}} -Dspark.local.dir={{spark_local_dirs}}"
-export SPARK_JAVA_OPTS
- 
-# Use the public hostname of this EC2 machine for web UIs.
+export SPARK_SUBMIT_LIBRARY_PATH="$SPARK_SUBMIT_LIBRARY_PATH:/root/ephemeral-hdfs/lib/native/"
+export SPARK_SUBMIT_CLASSPATH="$SPARK_CLASSPATH:$SPARK_SUBMIT_CLASSPATH:/root/ephemeral-hdfs/conf"
+
+# Bind Spark's web UIs to this machine's public EC2 hostname:
 export SPARK_PUBLIC_DNS=`wget -q -O - http://169.254.169.254/latest/meta-data/public-hostname`
 
-export SPARK_MASTER_IP={{active_master}}
-
-export SPARK_CLASSPATH+=:/root/tachyon/target/tachyon-0.4.0-jar-with-dependencies.jar
-export ADD_JARS=/root/tachyon/target/tachyon-0.4.0-jar-with-dependencies.jar
-
-# Use the Spark cluster url is $MASTER is not set
-export MASTER=${MASTER-`cat /root/spark-ec2/cluster-url`}
-export SPARK_EXECUTOR_URI=hdfs://{{active_master}}:9000/spark.tar.gz
+# Set a high ulimit for large shuffles
+ulimit -n 1000000

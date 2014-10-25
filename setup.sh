@@ -20,14 +20,8 @@ export HOSTNAME=$PRIVATE_DNS  # Fix the bash built-in hostname variable too
 echo "Setting up Spark on `hostname`..."
 
 # Set up the masters, slaves, etc files based on cluster env variables
-echo "$MESOS_MASTERS" > masters
-echo "$MESOS_SLAVES" > slaves
-
-# TODO(shivaram): Clean this up after docs have been updated ?
-# This ensures /root/mesos-ec2/copy-dir still works
-mkdir -p /root/mesos-ec2
-cp -f slaves /root/mesos-ec2/
-cp -f masters /root/mesos-ec2/
+echo "$MASTERS" > masters
+echo "$SLAVES" > slaves
 
 MASTERS=`cat masters`
 NUM_MASTERS=`cat masters | wc -l`
@@ -37,11 +31,6 @@ SSH_OPTS="-o StrictHostKeyChecking=no -o ConnectTimeout=5"
 
 if [[ "x$JAVA_HOME" == "x" ]] ; then
     echo "Expected JAVA_HOME to be set in .bash_profile!"
-    exit 1
-fi
-
-if [[ "x$SCALA_HOME" == "x" ]] ; then
-    echo "Expected SCALA_HOME to be set in .bash_profile!"
     exit 1
 fi
 
@@ -108,19 +97,19 @@ for node in $SLAVES $OTHER_MASTERS; do
 done
 wait
 
-# Set environment variables required by templates
-# TODO: Make this general by using a init.sh per module ?
-./mesos/compute_cluster_url.py > ./cluster-url
-export MESOS_CLUSTER_URL=`cat ./cluster-url`
-# TODO(shivaram): Clean this up after docs have been updated ?
-cp -f cluster-url /root/mesos-ec2/
+# Always include 'scala' module if it's not defined as a work around
+# for older versions of the scripts.
+if [[ ! $MODULES =~ *scala* ]]; then
+  MODULES=$(printf "%s\n%s\n" "scala" $MODULES)
+fi
 
-# Install / Init module before templates if required
+# Install / Init module
 for module in $MODULES; do
   echo "Initializing $module"
   if [[ -e $module/init.sh ]]; then
     source $module/init.sh
   fi
+  cd /root/spark-ec2  # guard against init.sh changing the cwd
 done
 
 # Deploy templates
@@ -138,4 +127,5 @@ for module in $MODULES; do
   echo "Setting up $module"
   source ./$module/setup.sh
   sleep 1
+  cd /root/spark-ec2  # guard against setup.sh changing the cwd
 done

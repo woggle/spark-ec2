@@ -2,7 +2,7 @@
 
 pushd /root
 
-if [ -d "spark" ]; then
+if [ -d "spark/bin" ]; then
   echo "Spark seems to be installed. Exiting."
   return
 fi

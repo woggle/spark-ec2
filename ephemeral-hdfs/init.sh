@@ -2,7 +2,7 @@
 
 pushd /root
 
-if [ -d "ephemeral-hdfs" ]; then
+if [ -d "ephemeral-hdfs/bin" ]; then
   echo "Ephemeral HDFS seems to be installed. Exiting."
   return 0
 fi

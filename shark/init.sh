@@ -2,7 +2,7 @@
 
 pushd /root
 
-if [ -d "shark" ]; then
+if [ -d "shark/bin" ]; then
   echo "Shark seems to be installed. Exiting."
   popd
   return

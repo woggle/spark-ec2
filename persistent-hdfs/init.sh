@@ -2,7 +2,7 @@
 
 pushd /root
 
-if [ -d "persistent-hdfs" ]; then
+if [ -d "persistent-hdfs/bin" ]; then
   echo "Persistent HDFS seems to be installed. Exiting."
   return 0
 fi

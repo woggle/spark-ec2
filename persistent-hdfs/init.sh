@@ -7,6 +7,10 @@ if [ -d "persistent-hdfs/bin" ]; then
   return 0
 fi
 
+if [ -d persistent-hdfs ]; then
+    mv persistent-hdfs old-persistent-hdfs
+fi
+
 case "$HADOOP_MAJOR_VERSION" in
   1)
     wget http://s3.amazonaws.com/spark-related-packages/hadoop-1.0.4.tar.gz
@@ -31,6 +35,12 @@ case "$HADOOP_MAJOR_VERSION" in
      echo "ERROR: Unknown Hadoop version"
      return -1
 esac
+
+if [ -d old-persistent-hdfs ]; then
+    mv old-persistent-hdfs/conf persistent-hdfs/conf
+    rmdir old-persistent-hdfs
+fi
+
 cp /root/hadoop-native/* /root/persistent-hdfs/lib/native/
 /root/spark-ec2/copy-dir /root/persistent-hdfs
 popd

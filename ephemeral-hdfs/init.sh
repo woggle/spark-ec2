@@ -7,6 +7,10 @@ if [ -d "ephemeral-hdfs/bin" ]; then
   return 0
 fi
 
+if [ -d ephemeral-hdfs ]; then
+    mv ephemeral-hdfs old-ephemeral-hdfs
+fi
+
 case "$HADOOP_MAJOR_VERSION" in
   1)
     wget http://s3.amazonaws.com/spark-related-packages/hadoop-1.0.4.tar.gz
@@ -32,6 +36,10 @@ case "$HADOOP_MAJOR_VERSION" in
      echo "ERROR: Unknown Hadoop version"
      return -1
 esac
+if [ -d old-ephemeral-hdfs ]; then
+    mv old-ephemeral-hdfs/conf ephemeral-hdfs/conf
+    rmdir old-ephemeral-hdfs
+fi
 cp /root/hadoop-native/* ephemeral-hdfs/lib/native/
 /root/spark-ec2/copy-dir /root/ephemeral-hdfs
 popd

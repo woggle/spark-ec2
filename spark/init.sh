@@ -103,7 +103,14 @@ else
   echo "Unpacking Spark"
   tar xvzf spark-*.tgz > /tmp/spark-ec2_spark.log
   rm spark-*.tgz
+  if [ -d spark ]; then
+     mv spark old-spark
+  fi
   mv `ls -d spark-* | grep -v ec2` spark
+  if [ -d old-spark ]; then
+      mv old-spark/conf spark/conf
+      rmdir old-spark
+  fi
 fi
 
 popd

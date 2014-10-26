@@ -17,5 +17,7 @@ export SPARK_SUBMIT_CLASSPATH="$SPARK_CLASSPATH:$SPARK_SUBMIT_CLASSPATH:/root/ep
 # Bind Spark's web UIs to this machine's public EC2 hostname:
 export SPARK_PUBLIC_DNS=`wget -q -O - http://169.254.169.254/latest/meta-data/public-hostname`
 
+export PYSPARK_PYTHON=/usr/bin/python27
+
 # Set a high ulimit for large shuffles
 ulimit -n 1000000

@@ -3,7 +3,7 @@
 # Create certificate for the cluster (so we can connect w/ HTTPS and not
 # send cleartext password).
 pushd /root
-openssl req -x509 -nodes -days 365 -newkey rsa:1024 -keyout mycert.pem -out mycert.pem -batch
+openssl req -x509 -nodes -days 365 -newkey rsa:2048 -keyout mycert.pem -out mycert.pem -batch
 popd
 
 # Kill all of the existing screens.

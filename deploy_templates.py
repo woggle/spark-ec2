@@ -46,12 +46,19 @@ elif system_ram_mb > 10*1024:
 else:
   spark_mb = max(512, system_ram_mb - 1300) # Leave 1.3 GB RAM
 
-# Make tachyon_mb as spark_mb for now.
-tachyon_mb = spark_mb
-
 worker_instances = int(os.getenv("SPARK_WORKER_INSTANCES", 1))
 # Distribute equally cpu cores among worker instances
 worker_cores = max(slave_cpus / worker_instances, 1)
+
+# Divide memory by 4 / worker_cores, under the assumption that we're running
+# that many workers per machine and they should all fit.
+# Also subtract 1000mb, which is how much we give the driver, to
+# make sure that everything will fit when we're also running a driver
+# on each worker.
+spark_mb = (spark_mb - 1100) / (4 / worker_cores)
+
+# Make tachyon_mb as spark_mb for now.
+tachyon_mb = spark_mb
 
 template_vars = {
   "master_list": os.getenv("MASTERS"),

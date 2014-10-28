@@ -1,6 +1,7 @@
 # Configure the necessary Spark environment
 import os
 os.environ['SPARK_HOME'] = '/root/spark/'
+os.environ['PYSPARK_PYTHON'] = '/usr/bin/python27'
 
 # And Python path
 import sys

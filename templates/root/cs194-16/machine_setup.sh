@@ -12,6 +12,9 @@ else
     popd
 fi
 
+
+rm lab8*.ipynb
+
 # Kill all of the existing screens.
 screen -ls | grep Detached | cut -d . -f 1 | awk '{print $1}' | xargs kill
 

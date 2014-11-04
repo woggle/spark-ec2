@@ -20,7 +20,7 @@ ipython profile create default
 
 PASSWD=`python27 -c '
 from random import SystemRandom
-lines = map(str.strip, open("diceware_list.txt", "r").readlines())
+lines = map(str.strip, open("/root/cs194-16/diceware_list.txt", "r").readlines())
 print " ".join([SystemRandom().choice(lines) for i in range(3)])
 '`
 echo "********************************************************"

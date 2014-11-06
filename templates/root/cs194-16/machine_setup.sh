@@ -25,7 +25,7 @@ PASSWD=`python27 -c '
 from random import SystemRandom
 lines = map(str.strip, open("/root/cs194-16/diceware_list.txt", "r").readlines())
 print " ".join([SystemRandom().choice(lines) for i in range(3)])
-'`
+' | sed -e "s/'//g"`
 echo "********************************************************"
 echo `wget -q -O - http://169.254.169.254/latest/meta-data/public-hostname` $PASSWD
 echo "$PASSWD" >/root/clear_passwd.txt
